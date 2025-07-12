@@ -59,7 +59,6 @@ function SignIn() {
 
     const onLogin = (data) => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
-        localStorage.setItem('isLoggedIn', 'true');
 
         if (!storedUser || storedUser.email !== data.email) {
             setError('email', { message: 'Email not found' });
@@ -72,9 +71,11 @@ function SignIn() {
         }
 
         clearErrors();
+        localStorage.setItem('isLoggedIn', 'true');
         setIsLoggedIn(true);
         navigate('/dashboard');
     };
+
 
     const fakeEmailCheck = (email) => {
         return email === 'aseyanvache39@gmail.com';
@@ -119,7 +120,7 @@ function SignIn() {
         position: 'relative',
         display: 'flex',
         alignItems: 'center',
-        width: '410px',
+        width: '390px',
     };
 
     const iconStyle = {

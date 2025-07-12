@@ -1,4 +1,3 @@
-import React from 'react';
 import correct from '../../assets/photos/correct.png';
 
 function SuccessMessage({ onGoToSignIn }) {

@@ -1,0 +1,116 @@
+.modal .ant-modal-content {
+    height: 620px;
+    width: 478px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: column;
+    padding: 24px;
+}
+
+.modal .ant-modal-title {
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 20px;
+    line-height: 100%;
+    letter-spacing: 0%;
+
+}
+
+.modal-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+}
+
+.modal-section {
+    display: flex;
+    flex-direction: column;
+    width: 360px;
+}
+
+.modal-section input,
+.modal-section textarea,
+.modal-section .ant-select {
+    outline: none;
+}
+
+.modal-label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+.modal-section textarea {
+    width: 366px;
+    height: 80px;
+    resize: none;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.required {
+    color: red;
+    margin-left: 4px;
+}
+
+
+.char-limit {
+    font-size: 12px;
+    color: gray;
+    text-align: right;
+    margin-top: 4px;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    width: 360px;
+    margin-top: 16px;
+}
+
+.cancel-btn,
+.submit-btn {
+    padding: 6px 16px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    background-color: white;
+    border: 1px solid #2D6CDF;
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 14px;
+    line-height: 100%;
+    color: #2D6CDF;
+    border-radius: 8px;
+    letter-spacing: 0%;
+
+}
+
+.submit-btn {
+    background-color: #1677ff;
+    color: white;
+    border: 1px solid #2D6CDF;
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 14px;
+    line-height: 100%;
+    border-radius: 8px;
+    letter-spacing: 0%;
+}
+
+.submit-btn:disabled {
+    border: none;
+    background-color: #7399e0;
+    cursor: not-allowed;
+}
