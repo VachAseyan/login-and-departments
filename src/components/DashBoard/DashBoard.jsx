@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer, useState } from 'react';
+import { useEffect, useReducer, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Avatar,
@@ -6,9 +6,7 @@ import {
     Button,
     Card,
     Col,
-    Empty,
     Input,
-    Popconfirm,
     Row,
     Space,
     Table,
@@ -21,53 +19,19 @@ import {
     PlusOutlined,
     SearchOutlined,
     ReloadOutlined,
+    EditOutlined,
 } from '@ant-design/icons';
-
+import { departmentReducer, initDepartments, ACTIONS } from '../reducer/departmentReducer';
+import DepartmentModal from '../DepartmentModal/DepartmentModal';
 import notification from '../../assets/photos/notification.png';
 import profile from '../../assets/photos/profile.png';
 import notFoundillustration from "../../assets/photos/NotFoundillustration.png";
-
-import DepartmentModal from '../DepartmentModal/DepartmentModal';
-import './Dashboard.css';
-
-const ACTIONS = {
-    ADD: 'ADD',
-    UPDATE: 'UPDATE',
-    DELETE: 'DELETE',
-};
-
-function reducer(state, action) {
-    switch (action.type) {
-        case ACTIONS.ADD:
-            return [...state, action.payload];
-        case ACTIONS.UPDATE:
-            return state.map((dept, idx) =>
-                idx === action.index ? action.payload : dept
-            );
-        case ACTIONS.DELETE:
-            return state.filter((_, idx) => idx !== action.index);
-        default:
-            return state;
-    }
-}
-
-function init() {
-    try {
-        const saved = localStorage.getItem('departments');
-        if (saved) {
-            const parsed = JSON.parse(saved);
-            return Array.isArray(parsed) ? parsed : [];
-        }
-        return [];
-    } catch (error) {
-        console.error('Error loading departments from localStorage:', error);
-        return [];
-    }
-}
+import vector from "../../assets/photos/Vector.png";
+import './DashBoard.css';
 
 function Dashboard() {
     const navigate = useNavigate();
-    const [departments, dispatch] = useReducer(reducer, [], init);
+    const [departments, dispatch] = useReducer(departmentReducer, [], initDepartments);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
@@ -77,8 +41,6 @@ function Dashboard() {
         status: 'active',
     });
     const [editingIndex, setEditingIndex] = useState(null);
-    const [showLogout, setShowLogout] = useState(false);
-
     const [searchName, setSearchName] = useState('');
     const [searchDescription, setSearchDescription] = useState('');
     const [searchHead, setSearchHead] = useState('');
@@ -88,10 +50,12 @@ function Dashboard() {
     const [tempSearchDescription, setTempSearchDescription] = useState('');
     const [tempSearchHead, setTempSearchHead] = useState('');
 
+    // Save to localStorage
     useEffect(() => {
         localStorage.setItem('departments', JSON.stringify(departments));
     }, [departments]);
 
+    // Filter departments
     const filteredDepartments = useMemo(() => {
         return departments.filter((dept) => {
             const matchName = dept.name.toLowerCase().includes(searchName.toLowerCase());
@@ -102,6 +66,7 @@ function Dashboard() {
         });
     }, [departments, searchName, searchDescription, searchHead, statusFilter]);
 
+    // Action handlers
     const handleLogout = () => {
         localStorage.removeItem('isLoggedIn');
         navigate('/');
@@ -122,7 +87,6 @@ function Dashboard() {
             setEditingIndex(null);
         }
         setIsModalOpen(true);
-        setShowLogout(false);
     };
 
     const handleModalOk = () => {
@@ -139,9 +103,10 @@ function Dashboard() {
     };
 
     const handleChange = (field, value) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
+        setFormData(prev => ({ ...prev, [field]: value }));
     };
 
+    // Search functions
     const applySearch = () => {
         setSearchName(tempSearchName);
         setSearchDescription(tempSearchDescription);
@@ -156,7 +121,6 @@ function Dashboard() {
         setTempSearchName('');
         setTempSearchDescription('');
         setTempSearchHead('');
-        setShowAdvancedSearch(false);
     };
 
     const columns = [
@@ -164,59 +128,97 @@ function Dashboard() {
             title: 'DEPARTMENT NAME',
             dataIndex: 'name',
             key: 'name',
-            render: (text) => <strong>{text}</strong>,
+            render: (text) => <strong>{text || '-'}</strong>,
         },
         {
             title: 'DESCRIPTION',
             dataIndex: 'description',
             key: 'description',
+            render: (text) => text?.trim() ? text : '-',
         },
         {
             title: 'HEAD',
             dataIndex: 'head',
             key: 'head',
+            render: (text) => text?.trim() ? text : '-',
         },
         {
             title: 'BRANCHES',
             dataIndex: 'branches',
             key: 'branches',
+            render: (text) => {
+                const count = Number(text);
+
+                if (!count) {
+                    return <span style={{ textDecoration: 'underline' }}>No Branches</span>;
+                }
+
+                return (
+                    <span style={{
+                        textDecoration: 'underline', color: '#2D6CDF',
+                    }}>
+                        {count} {count === 1 ? 'branch' : 'branches'}
+                    </span>
+                );
+            },
         },
         {
             title: 'STATUS',
             dataIndex: 'status',
             key: 'status',
-            render: (status) => (
-                <Tag color={status === 'active' ? 'green' : 'red'}>
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                </Tag>
-            ),
+            render: (status) => {
+                const isDisabled = status === 'disabled';
+                return (
+                    <Tag
+                        className={`status-tag ${isDisabled ? 'disabled' : 'active'}`}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                    >
+
+                        {status ? status.charAt(0).toUpperCase() + status.slice(1) : '-'}
+
+                        {isDisabled && (
+                            <Tooltip title="This department is disabled">
+                                <img src={vector}
+                                    style={{ marginLeft: 25, cursor: 'pointer' }}
+                                />
+                            </Tooltip>
+                        )}
+                    </Tag>
+                );
+            },
         },
         {
             title: '',
             key: 'actions',
             render: (_, __, index) => (
-                <Space size="middle">
-                    <p
-                        style={{ cursor: 'pointer', color: '#1890ff', margin: 0 }}
-                        onClick={() => openModal(index)}
-                    >
-                        ...
-                    </p>
-                    <Button
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() => handleDelete(index)}
-                    />
+                <Space size="middle" className="action-buttons">
+                    <Tooltip title="Edit">
+                        <Button
+                            type="primary"
+                            shape="circle"
+                            icon={<EditOutlined />}
+                            onClick={() => openModal(index)}
+                            className="edit-btn"
+                        />
+                    </Tooltip>
+                    <Tooltip title="Delete">
+                        <Button
+                            danger
+                            shape="circle"
+                            icon={<DeleteOutlined />}
+                            onClick={() => handleDelete(index)}
+                            className="delete-btn"
+                        />
+                    </Tooltip>
                 </Space>
             ),
-        },
-
+        }
     ];
 
     return (
         <div className="dashboard-container">
             <header className="dashboard-header">
-                <Row align="middle" justify="end" gutter={16} style={{ width: '100%' }}>
+                <Row align="middle" justify="end" gutter={12} style={{ width: '100%' }}>
                     <Col>
                         <Input
                             placeholder="Search..."
@@ -225,29 +227,28 @@ function Dashboard() {
                         />
                     </Col>
                     <Col>
-                        <Tooltip title="Notifications">
+                        <Tooltip>
                             <Badge size="small" className="notif-badge">
                                 <img src={notification} className="notif-icon" alt="Notifications" />
                             </Badge>
                         </Tooltip>
                     </Col>
                     <Col>
-                        <div className="user-avatar-container">
+                        <div className="user-avatar-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                             <Avatar
                                 src={profile}
                                 size={40}
-                                onClick={() => setShowLogout((prev) => !prev)}
                                 className="user-avatar"
                             />
-                            {showLogout && (
-                                <Button danger onClick={handleLogout} className="logout-btn">
-                                    Logout
-                                </Button>
-                            )}
+                            <Button danger onClick={handleLogout} className="logout-btn">
+                                Logout
+                            </Button>
+
                         </div>
                     </Col>
                 </Row>
             </header>
+
 
             {departments.length > 0 ? (
                 <>
@@ -343,8 +344,10 @@ function Dashboard() {
                             pagination={false}
                             columns={columns}
                             className="departments-table"
-                            bordered
+                            rowClassName={(record) => (record.status === 'disabled' ? 'disabled-row' : '')}
+                            scroll={{ x: 'max-content' }}
                         />
+
                     </main>
                 </>
             ) : (
@@ -373,6 +376,7 @@ function Dashboard() {
                 formData={formData}
                 onChange={handleChange}
                 editing={editingIndex !== null}
+                onBranchChange={editingIndex !== null ? (value) => handleBranchChangeImmediate(editingIndex, value) : undefined}
             />
         </div>
     );

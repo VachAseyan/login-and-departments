@@ -132,7 +132,7 @@ function SignIn() {
     };
 
     const inputStyle = {
-        width: '100%',
+        width: '390px',
         height: '38px',
     };
 
