@@ -21,7 +21,7 @@ import {
     ReloadOutlined,
     EditOutlined,
 } from '@ant-design/icons';
-import { departmentReducer, initDepartments, ACTIONS } from '../reducer/departmentReducer';
+import { departmentReducer, initDepartments, ACTIONS } from '../../reducer/departmentReducer';
 import DepartmentModal from '../DepartmentModal/DepartmentModal';
 import notification from '../../assets/photos/notification.png';
 import profile from '../../assets/photos/profile.png';
@@ -50,12 +50,10 @@ function Dashboard() {
     const [tempSearchDescription, setTempSearchDescription] = useState('');
     const [tempSearchHead, setTempSearchHead] = useState('');
 
-    // Save to localStorage
     useEffect(() => {
         localStorage.setItem('departments', JSON.stringify(departments));
     }, [departments]);
 
-    // Filter departments
     const filteredDepartments = useMemo(() => {
         return departments.filter((dept) => {
             const matchName = dept.name.toLowerCase().includes(searchName.toLowerCase());
@@ -66,7 +64,6 @@ function Dashboard() {
         });
     }, [departments, searchName, searchDescription, searchHead, statusFilter]);
 
-    // Action handlers
     const handleLogout = () => {
         localStorage.removeItem('isLoggedIn');
         navigate('/');
@@ -106,7 +103,6 @@ function Dashboard() {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    // Search functions
     const applySearch = () => {
         setSearchName(tempSearchName);
         setSearchDescription(tempSearchDescription);
@@ -192,7 +188,7 @@ function Dashboard() {
             key: 'actions',
             render: (_, __, index) => (
                 <Space size="middle" className="action-buttons">
-                    <Tooltip title="Edit">
+                    <Tooltip>
                         <Button
                             type="primary"
                             shape="circle"
@@ -201,7 +197,7 @@ function Dashboard() {
                             className="edit-btn"
                         />
                     </Tooltip>
-                    <Tooltip title="Delete">
+                    <Tooltip>
                         <Button
                             danger
                             shape="circle"
@@ -376,7 +372,6 @@ function Dashboard() {
                 formData={formData}
                 onChange={handleChange}
                 editing={editingIndex !== null}
-                onBranchChange={editingIndex !== null ? (value) => handleBranchChangeImmediate(editingIndex, value) : undefined}
             />
         </div>
     );
