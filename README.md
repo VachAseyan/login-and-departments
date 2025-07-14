@@ -14,7 +14,7 @@ To fully achieve the functionality depicted in the Figma design, a Back-End API 
 
 ## Demo Credentials
 - **Email:** `aseyanvache39@gmail.com`
-- **Password:** `TrioSoft2025@`
+- **Password:** `Triosoft2025@`
 - All login and password fields are validated for format and security requirements.
 
 ## Installation
